@@ -19,17 +19,32 @@ _mspec = importlib.util.spec_from_file_location("swarm_models", _models_path)
 _models = importlib.util.module_from_spec(_mspec)
 _mspec.loader.exec_module(_models)
 
+# Load project context
+_context_path = Path(__file__).parent.parent / "context.py"
+_cspec = importlib.util.spec_from_file_location("swarm_context", _context_path)
+_context_mod = importlib.util.module_from_spec(_cspec)
+_cspec.loader.exec_module(_context_mod)
+
+# Default project root — override via environment variable HEADSTASH_ROOT
+import os
+PROJECT_ROOT = os.environ.get(
+    "HEADSTASH_ROOT",
+    "c:/Users/yuriy/OneDrive/Desktop/KiroProjects/headstash-website"
+)
+
 
 def create_backend_agent(callback_handler=None) -> Agent:
     """Create the backend engineer agent with local qwen3-coder for API code.
 
-    Args:
-        callback_handler: Optional callback for observability.
-            Use verbose_handler or minimal_handler from callbacks.py.
+    Injects real project context so the agent knows actual file paths,
+    Prisma model names, and import paths.
     """
+    project_context = _context_mod.get_project_context(PROJECT_ROOT)
+    full_prompt = BACKEND_ENGINEER_SYSTEM_PROMPT + "\n\n" + project_context
+
     return Agent(
         model=_models.get_backend_model(),
-        system_prompt=BACKEND_ENGINEER_SYSTEM_PROMPT,
+        system_prompt=full_prompt,
         tools=[file_read, file_write, editor, http_request],
         callback_handler=callback_handler,
     )

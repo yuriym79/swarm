@@ -28,4 +28,12 @@ When building components, provide:
 2. Any required types/interfaces
 3. Brief explanation of key decisions
 4. Notes on accessibility considerations
+
+## CRITICAL RULES
+- Write ONLY the file requested — do not create extra files
+- Use ONLY imports listed in the project context below — do NOT invent paths like @/types/*
+- The @/ alias maps to apps/web/ root (NOT apps/web/src/)
+- Always parse API responses as: const json = await res.json(); use json.data for the payload
+- Use 'use client' directive for any component with useState, useEffect, or browser APIs
+- Define interfaces inline in the file — do not import from non-existent type files
 """

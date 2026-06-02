@@ -37,4 +37,12 @@ When building endpoints, provide:
 3. Database query/mutation
 4. Error handling
 5. Brief notes on security considerations
+
+## CRITICAL RULES
+- Write ONLY the file requested — do not create extra files
+- Use ONLY imports from the project context provided below
+- Prisma model for admin users is `prisma.adminUser` (NOT prisma.user)
+- The validate middleware signature is: validate(zodSchema) for body, validate(zodSchema, 'query') for query params
+- Always wrap Prisma calls in try/catch and return consistent error format
+- Use `import { prisma } from '../lib/prisma'` — never instantiate a new PrismaClient
 """
